@@ -106,18 +106,18 @@
                                                 
                 this.moveBackward = function () {                    
                     if(checkMovement(this, 'backward')) {
-                        this.x -= this.speed;
-                        this.spriteX = this.movements.runningBackward.x;
-                        this.spriteY = this.movements.runningBackward.y;                   
+                        this.x -= this.speed;                                          
                     }
+                    this.spriteX = this.movements.runningBackward.x;
+                    this.spriteY = this.movements.runningBackward.y; 
                 };
                 
                 this.moveForward = function () {                    
                     if(checkMovement(this, 'forward')) {                    
-                        this.x += this.speed;
-                        this.spriteX = this.movements.runningForward.x;
-                        this.spriteY = this.movements.runningForward.y;  
+                        this.x += this.speed;                        
                     }                    
+                    this.spriteX = this.movements.runningForward.x;
+                    this.spriteY = this.movements.runningForward.y;  
                 };
 
                 this.update = function () {
