@@ -1,6 +1,6 @@
 (function() {
     
-//    console.log = function () {};
+    // console.log = function () {};
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
@@ -31,7 +31,7 @@
             
             // -----------------------------------------------------------
             // Util functions
-            function checkMovement(obj, movement) {
+            function isValidMovement(obj, movement) {
                 console.log(obj.x, obj.speed, WIDTH);
                 switch(movement) {
                     case 'backward':
@@ -63,28 +63,40 @@
 
             // -----------------------------------------------------------	
             // Player class
-            function Player(name, imageSource, key_backward, key_forward) {
+            function Player(name, imageSource, keys) {
 
                 this.name = name;                
                 this.x = 10;
                 this.y = HEIGHT - 250;
-                this.key_backward = key_backward;
-                this.key_forward = key_forward;
-                this.speed = 20;
+                this.key_backward = keys.backward;
+                this.key_forward = keys.forward;
+                this.speed = 40;
                 this.step = 0;
+                this.isDown = false;
+                this.isRunningForward = false;
                 
                 this.movements = {
                     initial: {
                         x: 35,
                         y: 325
                     },
-                    runningForward: {
-                        x: 70,
-                        y: 795
-                    },
+                    runningForward: [
+                        {
+                            x: 76,
+                            y: 795
+                        },
+                        {
+                            x: 265,
+                            y: 795
+                        }
+                    ],
                     runningBackward: {
                         x: 210,
                         y: 5450
+                    },
+                    down: {
+                        x: 40,
+                        y: 1040
                     }
                 };                
                 
@@ -105,19 +117,43 @@
                 };
                                                 
                 this.moveBackward = function () {                    
-                    if(checkMovement(this, 'backward')) {
+                    if(isValidMovement(this, 'backward')) {
                         this.x -= this.speed;                                          
                     }
                     this.spriteX = this.movements.runningBackward.x;
                     this.spriteY = this.movements.runningBackward.y; 
                 };
                 
-                this.moveForward = function () {                    
-                    if(checkMovement(this, 'forward')) {                    
+                this.moveForward = function () {   
+                    
+                    console.log(this.step);
+                    
+                    if(isValidMovement(this, 'forward')) {                    
                         this.x += this.speed;                        
+                    }                                   
+                    
+                    if(!this.step) {
+                        this.step = 1;
+                    }
+                    else {                        
+                        this.step = 0;
+                    }
+                    
+                    this.spriteX = this.movements.runningForward[this.step].x;
+                    this.spriteY = this.movements.runningForward[this.step].y;  
+                    
+                    
+                };
+                
+                this.moveDown = function () {  
+                    console.log(this.y);
+                    console.log(this.isDown);
+                    if(!this.isDown) {
+                        this.spriteX = this.movements.down.x;
+                        this.spriteY = this.movements.down.y;
+                        this.y += 40;
+                        this.isDown = true;
                     }                    
-                    this.spriteX = this.movements.runningForward.x;
-                    this.spriteY = this.movements.runningForward.y;  
                 };
 
                 this.update = function () {
@@ -143,17 +179,23 @@
 
             // -----------------------------------------------------------
             // creating the players
-            var player1 = new Player('Alucard', 'img/characters/alucardfinal.png', 65, 68);
+            var player1 = new Player('Alucard', 
+                'img/characters/alucardfinal.png', 
+                {
+                    forward: 65,
+                    backward: 68,
+                    up: 87,
+                    down: 83
+                }
+            );
 //            var player2 = new Player('Player2', 'yellow', 'right', 38, 40);	
             // -----------------------------------------------------------	
 
             // -----------------------------------------------------------
             // prevent mouse right click
             window.oncontextmenu = function (event) {
-                event.preventDefault();
+//                event.preventDefault();
             };
-            
-            
             
             document.querySelector('body').addEventListener('keydown', function (e) {
                 console.log(e.which);
@@ -163,7 +205,11 @@
                 }
                 
                 if(e.which === 68) {
-                    player1.moveForward();
+                    player1.moveForward();                   
+                }
+                
+                if(e.which === 83) {
+                    player1.moveDown();
                 }
                 
             });
@@ -173,11 +219,12 @@
                 
                 player1.initialPosition();
                 
+                if(player1.isDown) {
+                    player1.y -= 40;
+                    player1.isDown = false;
+                }
+                
             });
-            
-            
-            
-            
             
             // -----------------------------------------------------------	        
             // adding entities into a single array
